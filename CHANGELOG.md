@@ -9,6 +9,31 @@
 - 添加 `feishu-sheets-writer` skill (通用飞书 Sheets 写入)
 - 添加 `webhook-receiver-template` skill (通用 webhook 接收模板)
 - 完善 `docs/troubleshooting.md` 通用故障排查
+- 添加 repo-level pre-commit hook (跑 48 测试)
+
+## [1.0.1] - 2026-06-13
+
+### 新增
+- **CI/CD** (`.github/workflows/test.yml`)
+  - GitHub Actions 自动跑 48 个测试
+  - Python 3.11 / 3.12 matrix
+  - 每次 push 和 PR 自动验证
+  - 跑完生成 GitHub Actions step summary
+- **Issue Templates** (`.github/ISSUE_TEMPLATE/`)
+  - `bug.md` — 报告 skill 故障
+  - `new-skill.md` — 提议新 skill
+  - `improvement.md` — 提议现有 skill 改进
+- **README badges**
+  - Tests / Skills count / Tests passing / Python / License / 零硬编码
+- **PUSH.md 改写**
+  - 从"推送指南" → "推送记录" (✅ 已 push, 记录用过的 SSH key + 命令)
+- **dist/ 发布包**
+  - `jenkins-build-monitor-v1.2.0.tar.gz` (35KB)
+  - `jenkins-user-sync-monitor-v1.1.0.tar.gz` (20KB)
+
+### 验证
+- 远程同步: `5a3c667` on `main` (29 files)
+- 48/48 本地单测通过, <0.02s
 
 ## [1.0.0] - 2026-06-13
 
@@ -19,6 +44,7 @@
   - `INSTALL.md` — 通用安装指南 (单 skill / 批量 / 多机 / K8s)
   - `CONTRIBUTING.md` — 贡献流程 + 通用化 7 大原则
   - `CHANGELOG.md` (本文件)
+  - `PUSH.md` — 推送指南
 
 - **skills/jenkins-build-monitor v1.2.0 (通用化重写)**
   - 去除所有硬编码 (IP, Token, 用户名, 公司名, 项目名, SSH 公钥)
@@ -44,5 +70,6 @@
 6. 完整文档 (SKILL.md + README + INSTALL + CHANGELOG + .env.example)
 7. 真实可跑 (用真 Jenkins / 飞书测过)
 
-[Unreleased]: https://github.com/hqgaofeng/skills/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/hqgaofeng/skills/compare/v1.0.1...HEAD
+[1.0.1]: https://github.com/hqgaofeng/skills/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/hqgaofeng/skills/releases/tag/v1.0.0

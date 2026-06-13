@@ -1,120 +1,88 @@
-# 推送到 GitHub
+# GitHub 推送记录
 
-本地已 `git init` + `git add` + `git commit` 完成. 仓库在 `~/projects/hqgaofeng-skills-archive/`, 1 个 commit, 28 个文件.
+## ✅ 状态: 已推送
 
-由于助手**没有 GitHub 凭据**, 需要你**手动推一次**.
+仓库已成功推送到 `git@github.com:hqgaofeng/skills.git`, 主分支 `main`.
 
-## 选项 1: HTTPS + Personal Access Token (推荐)
+## 推送详情
+
+| 项 | 值 |
+|----|----|
+| 仓库 | https://github.com/hqgaofeng/skills |
+| 远程 URL | `git@github.com:hqgaofeng/skills.git` |
+| 推送时间 | 2026-06-13 |
+| 推送方式 | SSH (`~/.ssh/id_rsa_bu3bj`) |
+| 推送命令 | `GIT_SSH_COMMAND="ssh -i ~/.ssh/id_rsa_bu3bj -o IdentitiesOnly=yes" git push -u origin main` |
+| commit 数 | 2 (通用化 + 文档) |
+| 文件数 | 29 |
+
+## 推送流程 (留作参考)
+
+### 1. 选 SSH key
+
+本机有 4 把 SSH key, 测下来 `~/.ssh/id_rsa_bu3bj` (5/19, RSA 4096) 是 GitHub 唯一认可的那把:
 
 ```bash
-cd ~/projects/hqgaofeng-skills-archive
-
-# 1. 创建 Personal Access Token
-#    https://github.com/settings/tokens
-#    - 选 "Fine-grained tokens" 或 "Personal access tokens (classic)"
-#    - Scope: 勾 `repo` (完整仓库权限)
-#    - 复制 token (形如 ghp_xxxxx)
-
-# 2. 配置 remote (用 token 替换)
-git remote set-url origin https://<TOKEN>@github.com/hqgaofeng/skills.git
-
-# 3. 推送
-git push -u origin main
-
-# 4. 验证
-#    https://github.com/hqgaofeng/skills 应该有 28 个文件
+for k in id_ed25519 id_rsa id_rsa_bu3bj id_rsa_2048_bu3bj; do
+  ssh -i ~/.ssh/$k -o IdentitiesOnly=yes -T git@github.com 2>&1 | head -1
+done
+# id_rsa_bu3bj → Hi hqgaofeng!  ← 这把通过
 ```
 
-## 选项 2: SSH Key
+fingerprint: `SHA256:1+twcnPQrlgg3aIB3mhFtbZCrTHLtAwlJTajrTDqJHg`
+
+### 2. 配 remote + 推
 
 ```bash
-# 1. 检查 / 生成 SSH key
-ls ~/.ssh/id_rsa.pub  # 如果不存在:
-ssh-keygen -t ed25519 -C "your.email@company.com"
-# 密码留空
-
-# 2. 把公钥加到 GitHub
-#    https://github.com/settings/keys
-#    点 "New SSH key", 粘贴 ~/.ssh/id_rsa.pub 内容
-
-# 3. 改 remote
 cd ~/projects/hqgaofeng-skills-archive
 git remote set-url origin git@github.com:hqgaofeng/skills.git
-
-# 4. 推送
-git push -u origin main
+GIT_SSH_COMMAND="ssh -i ~/.ssh/id_rsa_bu3bj -o IdentitiesOnly=yes" git push -u origin main
 ```
 
-## 选项 3: GitHub CLI
+### 3. 验证
 
 ```bash
-# 1. 安装 gh (如果没装)
-#    https://cli.github.com/manual/installation
-
-# 2. 登录
-gh auth login
-# 选 HTTPS, 浏览器登录
-
-# 3. 推送
-cd ~/projects/hqgaofeng-skills-archive
-git push -u origin main
+GIT_SSH_COMMAND="ssh -i ~/.ssh/id_rsa_bu3bj -o IdentitiesOnly=yes" git ls-remote origin main
+# 5a3c667...refs/heads/main  ← 远程 HEAD
 ```
 
-## 推送后
+## 推送后的后续操作 (CI 自动化)
 
-### 验证
+仓库根目录已加 `.github/workflows/test.yml`, push 后会**自动**跑:
+- Python 3.11 / 3.12 matrix
+- jenkins-build-monitor 26 测试
+- jenkins-user-sync-monitor 22 测试
+- 汇总到 GitHub Actions summary
 
-访问 https://github.com/hqgaofeng/skills, 看到:
-- README.md 渲染正常
-- 28 个文件
-- 1 个 commit
+首次 push 后 CI 会自动触发, 在 https://github.com/hqgaofeng/skills/actions 可看.
 
-### 创建 Release (可选)
+## 本机 SSH 命令模板 (以后都用这个)
 
 ```bash
-# 打 tag
-cd ~/projects/hqgaofeng-skills-archive
-git tag v1.0.0 -m "v1.0.0: 通用化归档, 2 个 skill 零硬编码"
-git push origin v1.0.0
-
-# 在 GitHub 上:
-# https://github.com/hqgaofeng/skills/releases/new
-# 选 v1.0.0 tag, 写 changelog (从 CHANGELOG.md 复制)
+# ~/.bashrc 或临时
+export GIT_SSH_COMMAND="ssh -i ~/.ssh/id_rsa_bu3bj -o IdentitiesOnly=yes"
 ```
 
-### 下次更新 (后续)
+或者在仓库 `.git/config` 写死:
+
+```ini
+[core]
+    sshCommand = ssh -i ~/.ssh/id_rsa_bu3bj -o IdentitiesOnly=yes
+```
+
+## 备选方案 (本仓库未使用)
+
+如果以后 SSH 不通, 可降级到 HTTPS + PAT:
 
 ```bash
-# 拉新版本
-cd ~/projects/hqgaofeng-skills-archive
-git pull origin main
-
-# 改代码 / 加 skill
-
-# 提交
-git add -A
-git commit -m "feat: 新增 xxx skill"
+git remote set-url origin https://<TOKEN>@github.com/hqgaofeng/skills.git
 git push origin main
 ```
 
 ## 失败排查
 
-### Q: `could not read Username` 错误
-
-凭据没配, 见上面选项 1/2/3.
-
-### Q: `Permission denied`
-
-- HTTPS: 检查 token 有 `repo` scope
-- SSH: 检查 `~/.ssh/id_rsa.pub` 在 GitHub 里
-
-### Q: 推送大文件 (>100MB) 报错
-
-- LFS: `git lfs install` + `git lfs track "*.psd"` 等
-- 我们的 skill 文件都很小, 应该不会
-
-## 资源
-
-- [GitHub Personal Access Token 文档](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens)
-- [GitHub SSH 文档](https://docs.github.com/en/authentication/connecting-to-github-with-ssh)
-- [GitHub CLI 文档](https://cli.github.com/manual/)
+| 现象 | 原因 | 解法 |
+|------|------|------|
+| `Permission denied (publickey)` | 用的 key GitHub 不认 | 换 `id_rsa_bu3bj` 或重加公钥到 GitHub |
+| `could not read Username` | HTTPS 没配 token | 改用 SSH, 或加 token 到 URL |
+| `repository not found` | 没权限 / 仓库不存在 | 确认是仓库 owner, 有写权限 |

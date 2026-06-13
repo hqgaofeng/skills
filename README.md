@@ -2,6 +2,13 @@
 
 > Hermes / OpenClaw 通用 skills 归档仓库 — 跨项目, 跨公司, 跨平台
 
+[![Tests](https://github.com/hqgaofeng/skills/actions/workflows/test.yml/badge.svg)](https://github.com/hqgaofeng/skills/actions/workflows/test.yml)
+[![Skills](https://img.shields.io/badge/skills-2-blue)](./skills)
+[![Tests Count](https://img.shields.io/badge/tests-48%20passing-brightgreen)](./skills)
+[![Python](https://img.shields.io/badge/python-3.11%20%7C%203.12-blue)](https://www.python.org)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green)](./LICENSE)
+[![Zero Hardcoded Config](https://img.shields.io/badge/config-100%25%20env--driven-success)](#)
+
 ## ✨ 这是什么
 
 这是一个**通用 skill 归档仓库**. 每个 skill 都是独立可用的, 可以直接下载放到任何 Hermes 或 OpenClaw 实例的 `~/.hermes/skills/<category>/` 目录下使用.

@@ -1,0 +1,54 @@
+name: Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: ${{ matrix.os }} / py${{ matrix.python-version }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        python-version: ['3.11', '3.12']
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install python-dotenv
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install python-dotenv
+
+      - name: Run jenkins-build-monitor tests (26)
+        working-directory: skills/jenkins-build-monitor
+        run: python scripts/test_logic.py
+
+      - name: Run jenkins-user-sync-monitor tests (22)
+        working-directory: skills/jenkins-user-sync-monitor
+        run: python scripts/test_analyzer.py
+
+      - name: Test summary
+        if: always()
+        run: |
+          {
+            echo "## Test Summary"
+            echo "- jenkins-build-monitor: 26 tests"
+            echo "- jenkins-user-sync-monitor: 22 tests"
+            echo "- **Total: 48 tests**"
+            echo "- Python: ${{ matrix.python-version }}"
+            echo "- OS: ${{ matrix.os }}"
+          } >> $GITHUB_STEP_SUMMARY
