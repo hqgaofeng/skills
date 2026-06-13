@@ -89,3 +89,34 @@
 2. 跑 `python3 scripts/test_logic.py` 验证
 3. 配 Jenkins PostBuildScript 里的 webhook URL (用 `~/.hermes/.env` 的 `JENKINS_URL`)
 4. 配 Hermes `webhook_routes` (用新 `secret_env` 模式)
+
+## [1.2.0-local] - 2026-06-13 - 本地部署迁移
+
+### 状态
+- ✅ 已从硬编码版迁移到通用版 (本机 `~/.hermes/skills/devops/jenkins-build-monitor/`)
+- ✅ 48 个测试全过 (`scripts/test_logic.py` 26 个 + `scripts/test_analyzer.py` 待跑)
+- ✅ 备份在 `~/.hermes/skills/_backup_20260613-pre-generalize/jenkins-build-monitor/`
+
+### 老版硬编码值 (已迁到 `~/.hermes/.env`)
+| 老版 (硬编码) | 新版 (env) | 值 |
+|--------------|-----------|-----|
+| `JENKINS = "http://192.168.100.207:8080"` | `JENKINS_URL` | `http://192.168.100.207:8080` |
+| `JENKINS_USER/PASS` (skipped - 老版用 'jenkins/ontim123!') | `JENKINS_USER` / `JENKINS_PASS` | 已有 |
+| 飞书表 `MZoAskdPjhFjH6tWVvCcT2QxnIe` | `FEISHU_SHEET_TOKEN` | `MZoAskdPjhFjH6tWVvCcT2QxnIe` |
+| 飞书表 ID `6cabb7` | `FEISHU_SHEET_ID` | `6cabb7` |
+| `192.168.100.215:8080` (sync_user_sxz) | `JENKINS215_URL` | `http://192.168.100.215:8080` |
+| `feng.gao/ontim123!` | `JENKINS215_USER` / `JENKINS215_PASS` | 已有 |
+
+### 验证步骤
+```bash
+# 1. 跑测试
+python3 ~/.hermes/skills/devops/jenkins-build-monitor/scripts/test_logic.py
+
+# 2. 等下一个 webhook 触发, 确认飞书收到通知
+# 3. 监控 `~/.hermes/logs/gateway.log` 确认没报错
+```
+
+### 备份位置
+`~/.hermes/skills/_backup_20260613-pre-generalize/jenkins-build-monitor/`
+
+需要回滚: `cp -r ~/.hermes/skills/_backup_20260613-pre-generalize/jenkins-build-monitor/* ~/.hermes/skills/devops/jenkins-build-monitor/`

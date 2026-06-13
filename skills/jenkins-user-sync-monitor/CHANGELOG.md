@@ -87,3 +87,44 @@
 3. 配 Jenkins PostBuildScript 里的 webhook URL (用 `~/.hermes/.env` 的 `JENKINS_URL`)
 4. 配 Hermes `webhook_routes` (用新 `secret_env` 模式)
 5. 验证一次手动 build, 看飞书通知和表写入是否正常
+
+## [1.1.0-local] - 2026-06-13 - 本地部署迁移
+
+### 状态
+- ✅ 已从硬编码版迁移到通用版 (本机 `~/.hermes/skills/devops/jenkins-user-sync-monitor/`)
+- ✅ 22 个测试全过 (`scripts/test_analyzer.py` 0.005s)
+- ✅ 备份在 `~/.hermes/skills/_backup_20260613-pre-generalize/jenkins-user-sync-monitor/`
+
+### 老版硬编码值 (已迁到 `~/.hermes/.env`)
+| 老版 (硬编码) | 新版 (env) | 值 |
+|--------------|-----------|-----|
+| `TARGET_COMPANY = "西安中诺通讯有限公司"` | `TARGET_COMPANY` | `西安中诺通讯有限公司` |
+| `192.168.100.215:8080` (3 处) | `JENKINS215_URL` | `http://192.168.100.215:8080` |
+| `JENKINS215_USER/PASS` | 已有 | `feng.gao` / `ontim123!` |
+| 飞书表 `VfzCsSuTPhSIHTtZ2tFcHOJSnDd` | `FEISHU_SHEET_TOKEN_SYNC` | `VfzCsSuTPhSIHTtZ2tFcHOJSnDd` |
+| 飞书 bot webhook | `FEISHU_BOT_WEBHOOK` | `7c9a8b2d-3e4f-5a6b-7c8d-9e0f1a2b3c4d` |
+| `JOB_NAME = "sync_user_sxz"` (推测) | `JENKINS215_JOB_NAME` | `sync_user_sxz` |
+
+### 真实生产数据已从代码移除 (隐私保护)
+- ❌ ~~赵霞娃 15991641654~~ - 已从测试 fixture 删除, 改用合成数据
+- ❌ ~~刘谕 18391681580~~ - 同上
+- ❌ ~~田永奇 13410713451~~ - 同上
+- ❌ ~~许鹏 15016716768~~ - 同上
+- ❌ ~~蔡超群 90845382~~ - 同上
+
+(以上姓名手机邮箱都是真实员工, 之前误写在测试里, 现已脱敏)
+
+### 验证步骤
+```bash
+# 1. 跑测试
+/home/ontim/.hermes/hermes-agent/venv/bin/python \
+  ~/.hermes/skills/devops/jenkins-user-sync-monitor/scripts/test_analyzer.py
+
+# 2. 等下一个 sync_user_sxz 触发, 确认飞书通知正常
+# 3. 监控 `~/.hermes/logs/gateway.log` 确认没报错
+```
+
+### 备份位置
+`~/.hermes/skills/_backup_20260613-pre-generalize/jenkins-user-sync-monitor/`
+
+需要回滚: `cp -r ~/.hermes/skills/_backup_20260613-pre-generalize/jenkins-user-sync-monitor/* ~/.hermes/skills/devops/jenkins-user-sync-monitor/`
